@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de CV + IA</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; color: #333; max-width: 1100px; margin: 0 auto; padding: 20px; }
+        
+        /* HEADER */
+        header { text-align: center; background-color: #2c3e50; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { margin: 0; font-size: 24px; }
+
+        /* LAYOUT DE COLUMNAS */
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        
+        /* TARJETAS */
+        section { background-color: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        /* INPUTS Y TEXTAREAS */
+        label { display: block; margin-top: 15px; font-weight: bold; color: #555; font-size: 14px; }
+        input[type="text"], textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; font-size: 14px; }
+        textarea:focus, input:focus { border-color: #2ecc71; outline: none; }
+        
+        /* CAJA DE VACANTE (VERDE CLARO) */
+        .vacante-box { background-color: #e8f6f3; border: 2px solid #d1f2eb; }
+        
+        /* BOTÓN DE DESCARGA */
+        .btn-download { 
+            background-color: #28a745; color: white; width: 100%; padding: 15px; 
+            font-size: 18px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 20px; transition: 0.3s; 
+        }
+        .btn-download:hover { background-color: #218838; transform: translateY(-2px); }
+        
+        /* CHECKBOX IA */
+        .opt-ia { background: #fff3cd; padding: 10px; border-radius: 5px; margin-top: 15px; display: flex; align-items: center; gap: 10px; border: 1px solid #ffeeba; }
+        
+        small { color: #888; display: block; margin-top: 2px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📝 Editor de CV + Optimizador IA</h1>
+    </header>
+
+    <form action="/descargar_pdf" method="post">
+        <div class="grid-container">
+            
+            <section>
+                <h3>1. Tus Datos Extraídos</h3>
+                
+                <label>Nombre Completo</label>
+                <input type="text" name="nombre" value="{{ datos.nombre }}" required>
+                
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex:1">
+                        <label>Email</label>
+                        <input type="text" name="email" value="{{ datos.email }}">
+                    </div>
+                    <div style="flex:1">
+                        <label>Teléfono</label>
+                        <input type="text" name="telefono" value="{{ datos.telefono }}">
+                    </div>
+                </div>
+
+                <label>Perfil Profesional</label>
+                <textarea name="perfil" style="height: 100px;">{{ datos.perfil }}</textarea>
+
+                <label>Experiencia (Texto plano)</label>
+                <textarea name="experiencia" style="height: 200px;">{{ datos.experiencia }}</textarea>
+                <small>💡 El sistema detectará fechas y títulos automáticamente en el PDF final.</small>
+
+                <label>Educación</label>
+                <textarea name="educacion" style="height: 100px;">{{ datos.educacion }}</textarea>
+
+                <label>Habilidades (Skills)</label>
+                <textarea name="skills" style="height: 80px;">{{ datos.skills }}</textarea>
+            </section>
+
+            <section class="vacante-box">
+                <h3>2. La Vacante (Target)</h3>
+                
+                <label>Link de la Vacante (URL)</label>
+                <input type="text" name="vacante_url" placeholder="https://www.linkedin.com/jobs/..." style="margin-bottom: 10px;">
+
+                <label>Descripción del Puesto</label>
+                <p style="font-size: 0.9em; color: #666; margin-top: 0; margin-bottom: 5px;">
+                    Pega aquí la descripción completa. La IA buscará palabras clave que te falten.
+                </p>
+                <textarea name="vacante" style="height: 300px;" placeholder="Ej: Buscamos Ingeniero Mecatrónico con experiencia en PLC..."></textarea>
+                
+                <div class="opt-ia">
+                    <input type="checkbox" name="ia_opt" id="ia" value="si" checked>
+                    <label for="ia" style="margin:0; cursor: pointer; font-weight: normal;">
+                        ⚡ <strong>Auto-Optimizar con IA</strong><br>
+                        <span style="font-size: 12px;">Agrega automáticamente skills faltantes de la vacante a tu CV.</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-download">⬇️ Generar y Descargar PDF</button>
+            </section>
+        </div>
+    </form>
+</body>
+</html>
+

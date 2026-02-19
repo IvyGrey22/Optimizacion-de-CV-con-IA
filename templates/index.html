@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto de Titulación | Ivette Pérez</title>
+    <style>
+        body { font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; background-color: #f0f2f5; color: #333; max-width: 950px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* HEADER */
+        header { text-align: center; background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 25px; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { margin: 0; font-size: 26px; }
+
+        /* MAIN */
+        main { flex: 1; }
+
+        /* SECCIONES */
+        section { background: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        h2 { color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; margin-top: 0; }
+
+        /* INPUTS */
+        .upload-box { border: 2px dashed #bdc3c7; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; background: #fafafa; border-radius: 6px; }
+        .upload-box:hover { border-color: #3498db; background: #ebf5fb; }
+        input[type="text"], textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; margin-top: 5px; box-sizing: border-box; font-family: inherit; }
+        .vacante-box { border-left: 4px solid #34495e; padding-left: 15px; margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 5px; }
+
+        /* BOTONES */
+        button { cursor: pointer; transition: 0.3s; border: none; font-weight: bold; border-radius: 6px; }
+        .btn-agregar { background: #e0e0e0; color: #333; padding: 10px 20px; margin-top: 10px; }
+        .btn-analizar { background: #27ae60; color: white; width: 100%; padding: 15px; font-size: 18px; margin-top: 10px; }
+        .btn-analizar:hover { background: #219150; transform: translateY(-2px); }
+
+        /* AUDITORÍA */
+        .audit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .audit-item { padding: 10px; border-radius: 5px; font-size: 14px; }
+        .pass { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .fail { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* RESULTADOS VS */
+        .result-card { display: flex; flex-wrap: wrap; background: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-top: 20px; overflow: hidden; border-left: 8px solid #ccc; }
+        .score-section { background: #f8f9fa; padding: 20px; text-align: center; min-width: 130px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid #eee; }
+        .big-number { font-size: 48px; font-weight: 800; line-height: 1; }
+        .scale-label { font-size: 12px; color: #7f8c8d; margin-top: 5px; font-weight: bold; }
+        .info-section { padding: 20px; flex: 1; }
+        
+        /* BARRA DE PROGRESO */
+        .progress-container { background: #e0e0e0; border-radius: 10px; height: 22px; width: 100%; margin: 10px 0; overflow: hidden; position: relative; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #3498db, #2ecc71); width: 0%; transition: width 1s ease-in-out; }
+        .progress-text { position: absolute; width: 100%; text-align: center; top: 0; line-height: 22px; font-size: 12px; font-weight: bold; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.5); }
+
+        .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+        .tag { background: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 15px; font-size: 12px; border: 1px solid #ffeeba; }
+
+        .baja { border-color: #e74c3c; } .baja .big-number { color: #e74c3c; }
+        .media { border-color: #f1c40f; } .media .big-number { color: #f39c12; }
+        .alta { border-color: #27ae60; } .alta .big-number { color: #27ae60; }
+
+        /* PIE DE PÁGINA (FIRMA DE TESIS) */
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 25px;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #e0e0e0;
+            background-color: #fff;
+            border-radius: 10px;
+        }
+        .autor-nombre {
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 5px 0;
+            display: block;
+        }
+        .carrera {
+            color: #7f8c8d;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1> Analizador de CV y verificador de compatibilidad con vacantes</h1>
+        <p style="opacity: 0.9; margin-top: 5px;">Descubre si tu CV pasa los filtros y qué nota (1-10) saca contra la vacante.</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Carga tu CV (PDF)</h2>
+            <div class="upload-box" onclick="document.getElementById('cv-upload').click()">
+                <span style="font-size: 30px;">📄</span><br>
+                <span id="filename">Haz clic para seleccionar tu archivo PDF</span>
+                <input type="file" id="cv-upload" accept=".pdf" style="display: none;" onchange="document.getElementById('filename').innerText = this.files[0].name">
+            </div>
+        </section>
+
+        <section>
+            <h2>2. Vacantes a Analizar </h2>
+                <div id="contenedor-vacantes">
+    <div class="vacante-box">
+        <label><strong>Vacante #1:</strong></label>
+        <input type="text" id="vacante_titulo_1" placeholder="Ej: Ingeniero Mecatrónico">
+        <input type="text" id="vacante_url_1" placeholder="URL de la vacante (Opcional: https://...)">
+        <textarea id="vacante_desc_1" rows="4" placeholder="O pega aquí la descripción manual..."></textarea>
+    </div>
+</div>
+            <button type="button" class="btn-agregar" onclick="agregarCampoVacante()">+ Agregar otra vacante</button>
+        </section>
+
+        <button class="btn-analizar" onclick="ejecutarAnalisis()">📊 ANALIZAR AHORA</button>
+
+        <div id="resultados" style="display: none;">
+            
+            <section style="margin-top: 30px;">
+                <h2>📋 Auditoría Técnica ATS</h2>
+                <div id="audit-container" class="audit-grid"></div>
+            </section>
+
+            <section>
+                <h2>🏆 Calificación VS Vacante</h2>
+                <div id="vs-container"></div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <span class="carrera">Proyecto de Titulación de Ingeniería Mecatrónica</span>
+        <span class="autor-nombre">Desarrollado por: Ivette Pérez Pérez</span>
+        <span style="font-size: 12px; color: #999;">&copy; 2026 - Todos los derechos reservados</span>
+    </footer>
+
+    <script>
+        // --- LOGICA DE MÚLTIPLES VACANTES ---
+        let contadorVacantes = 1;
+        function agregarCampoVacante() {
+            if (contadorVacantes >= 5) return;
+            contadorVacantes++;
+            const div = document.createElement('div');
+            div.className = 'vacante-box';
+            div.innerHTML = `
+                <label><strong>Vacante #${contadorVacantes}:</strong></label>
+                <input type="text" id="vacante_titulo_${contadorVacantes}" placeholder="Título del puesto">
+                <textarea id="vacante_desc_${contadorVacantes}" rows="4" placeholder="Descripción..."></textarea>
+            `;
+            document.getElementById('contenedor-vacantes').appendChild(div);
+        }
+
+        // --- LÓGICA PRINCIPAL ---
+        async function ejecutarAnalisis() {
+            const fileInput = document.getElementById('cv-upload');
+            if (!fileInput.files[0]) return alert("⚠️ Por favor sube tu CV (PDF).");
+
+            // Verificar al menos una vacante
+            const vac1 = document.getElementById('vacante_desc_1').value;
+            if (!vac1) return alert("⚠️ Debes llenar al menos la Vacante #1.");
+
+            // Efecto visual
+            const btn = document.querySelector('.btn-analizar');
+            const txtOriginal = btn.innerText;
+            btn.innerText = "⏳ La IA está leyendo tu CV...";
+            btn.disabled = true;
+
+            // Preparar datos
+            const formData = new FormData();
+            formData.append('cv-upload', fileInput.files[0]);
+
+            // Agregar todas las vacantes
+            for (let i = 1; i <= contadorVacantes; i++) {
+    const tit = document.getElementById(`vacante_titulo_${i}`);
+    const desc = document.getElementById(`vacante_desc_${i}`);
+    const url = document.getElementById(`vacante_url_${i}`); // Añadir esto
+    if (tit && (desc || url)) {
+        formData.append(`vacante_titulo_${i}`, tit.value || `Vacante ${i}`);
+        formData.append(`vacante_desc_${i}`, desc.value);
+        formData.append(`vacante_url_${i}`, url.value); // Añadir esto
+    }
+}
+            try {
+                const res = await fetch('/analizar', { method: 'POST', body: formData });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    mostrarResultados(data);
+                } else {
+                    alert("Error del servidor: " + data.error);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Error de conexión. Revisa la terminal de Python.");
+            } finally {
+                btn.innerText = txtOriginal;
+                btn.disabled = false;
+            }
+        }
+
+        function mostrarResultados(data) {
+            document.getElementById('resultados').style.display = 'block';
+
+            // 1. RENDERIZAR AUDITORÍA
+            const auditDiv = document.getElementById('audit-container');
+            let auditHTML = "";
+            
+            // Checks básicos
+            auditHTML += data.auditoria.legibilidad 
+                ? `<div class="audit-item pass">✅ <strong>Legibilidad:</strong> Texto detectado correctamente.</div>`
+                : `<div class="audit-item fail">❌ <strong>Legibilidad:</strong> Es una imagen (Error Crítico).</div>`;
+
+            auditHTML += data.auditoria.contacto 
+                ? `<div class="audit-item pass">✅ <strong>Contacto:</strong> Email/Teléfono encontrados.</div>`
+                : `<div class="audit-item fail">❌ <strong>Contacto:</strong> No encontramos datos claros.</div>`;
+
+            // Errores específicos
+            if (data.auditoria.errores.length > 0) {
+                data.auditoria.errores.forEach(err => {
+                    if (!err.includes("ALERTA") && !err.includes("Contacto")) {
+                        auditHTML += `<div class="audit-item fail">${err}</div>`;
+                    }
+                });
+            } else {
+                auditHTML += `<div class="audit-item pass">✨ Estructura limpia y estándar detectada.</div>`;
+            }
+            auditDiv.innerHTML = auditHTML;
+
+            // 2. RENDERIZAR RESULTADOS VS (TARJETAS)
+            const vsDiv = document.getElementById('vs-container');
+            vsDiv.innerHTML = "";
+
+            if (!data.analisis_vs || data.analisis_vs.length === 0) {
+                vsDiv.innerHTML = "<p>No se pudieron analizar vacantes. Asegúrate de poner texto en la descripción.</p>";
+                return;
+            }
+
+            data.analisis_vs.forEach(item => {
+                // Definir color según nota
+                let colorClass = "baja";
+                if(item.calificacion_10 >= 8) colorClass = "alta";
+                else if(item.calificacion_10 >= 5) colorClass = "media";
+
+                // Generar etiquetas de faltantes
+                let tagsHTML = item.faltantes.map(t => `<span class="tag">⚠️ Falta: ${t}</span>`).join("");
+                if(!tagsHTML) tagsHTML = "<span style='color:green; font-weight:bold;'>¡Felicidades! Tienes todas las palabras clave.</span>";
+
+                // HTML de la Tarjeta
+                vsDiv.innerHTML += `
+                    <div class="result-card ${colorClass}">
+                        <div class="score-section">
+                            <div class="big-number">${item.calificacion_10}</div>
+                            <div class="scale-label">Escala 1-10</div>
+                        </div>
+                        <div class="info-section">
+                            <h3 style="margin:0;">${item.titulo}</h3>
+                            <div style="font-size: 14px; color: #666; margin-bottom: 5px;">${item.veredicto}</div>
+
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: ${item.compatibilidad}%"></div>
+                                <div class="progress-text">Compatibilidad Matemática: ${item.compatibilidad}%</div>
+                            </div>
+
+                            <p style="font-size: 13px; font-weight: bold; margin-top: 15px;">🔍 Palabras clave que le faltan a tu CV:</p>
+                            <div class="tags">${tagsHTML}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

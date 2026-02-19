@@ -1,0 +1,6 @@
+.venv
+entorno_cv
+__pycache__
+*.pyc
+*.txt
+!requirements.txt
