@@ -10,7 +10,18 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
+import requests
+from bs4 import BeautifulSoup
 
+def extraer_info_de_url(url):
+    try:
+        response = requests.get(url, timeout=10)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        # Extraemos el texto visible de la página
+        texto_vacante = soup.get_text()
+        return texto_vacante
+    except Exception as e:
+        return None
 # Cargar las variables del archivo .env
 load_dotenv()
 
@@ -106,13 +117,38 @@ def calcular_vs(texto_cv, texto_vacante):
 def inicio():
     return render_template('index.html')
 
+@app.route('/extraer_vacante', methods=['POST'])
+def api_extraer_vacante():
+    data = request.json
+    url = data.get('url')
+    if not url or not url.startswith("http"):
+        return jsonify({"error": "URL no válida"}), 400
+    
+    texto_sucio = extraer_texto_url(url)
+    if not texto_sucio:
+        return jsonify({"error": "No se pudo leer la URL"}), 400
+
+    try:
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        # Pedimos a la IA que estructure la información para ahorrar tiempo de carga
+        prompt = f"Extrae el título del puesto y un resumen de 3 líneas de los requisitos clave. Responde únicamente en formato JSON con las llaves 'titulo' y 'descripcion'. Texto: {texto_sucio[:2500]}"
+        res = model.generate_content(prompt)
+        
+        # Limpieza simple para asegurar que sea un JSON válido
+        respuesta_limpia = res.text.replace('```json', '').replace('```', '').strip()
+        return jsonify(respuesta_limpia) 
+    except Exception as e:
+        return jsonify({"titulo": "Puesto detectado", "descripcion": texto_sucio[:500]})
+
 @app.route('/analizar', methods=['POST'])
 def analizar_compatibilidad():
+    # Cambia esta línea dentro de analizar_compatibilidad:
+
     if 'cv-upload' not in request.files: return jsonify({"error": "No archivo"}), 400
     archivo = request.files['cv-upload']
     try:
         pdf = PdfReader(archivo)
-        texto_cv = "".join([page.extract_text() + "\n" for page in pdf.pages])
+        texto_cv = "".join([page.extract_text() for page in pdf.pages])[:4000]
         auditoria = auditar_ats(texto_cv)
         sugerencia_ia = obtener_sugerencia_puestos(texto_cv)
         

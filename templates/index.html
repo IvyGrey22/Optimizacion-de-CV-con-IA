@@ -82,6 +82,44 @@
         }
     </style>
 </head>
+<script>
+// Esta función detecta cuando pegas una URL en el campo correspondiente
+async function autoLlenarVacante(numero) {
+    const urlInput = document.getElementById(`vacante_url_${numero}`);
+    const tituloInput = document.getElementById(`vacante_titulo_${numero}`);
+    const descInput = document.getElementById(`vacante_desc_${numero}`);
+    const url = urlInput.value;
+
+    if (url.startsWith('http')) {
+        // Mostramos un mensaje temporal de carga
+        tituloInput.value = "Extrayendo información...";
+        
+        try {
+            const response = await fetch('/extraer_vacante', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({url: url})
+            });
+            
+            const data = await response.json();
+            // Si la IA nos devolvió un JSON en texto, lo convertimos
+            const info = typeof data === 'string' ? JSON.parse(data) : data;
+            
+            tituloInput.value = info.titulo || "";
+            descInput.value = info.descripcion || "";
+            
+        } catch (error) {
+            console.error("Error al extraer:", error);
+            tituloInput.value = "Error al extraer. Intenta manual.";
+        }
+    }
+}
+
+// Escuchar cuando el usuario termina de escribir o pega la URL
+document.querySelectorAll('[id^="vacante_url_"]').forEach((el, index) => {
+    el.addEventListener('change', () => autoLlenarVacante(index + 1));
+});
+</script>
 <body>
 
     <header>
@@ -138,17 +176,20 @@
         // --- LOGICA DE MÚLTIPLES VACANTES ---
         let contadorVacantes = 1;
         function agregarCampoVacante() {
-            if (contadorVacantes >= 5) return;
-            contadorVacantes++;
-            const div = document.createElement('div');
-            div.className = 'vacante-box';
-            div.innerHTML = `
-                <label><strong>Vacante #${contadorVacantes}:</strong></label>
-                <input type="text" id="vacante_titulo_${contadorVacantes}" placeholder="Título del puesto">
-                <textarea id="vacante_desc_${contadorVacantes}" rows="4" placeholder="Descripción..."></textarea>
-            `;
-            document.getElementById('contenedor-vacantes').appendChild(div);
-        }
+    if (contadorVacantes >= 5) return;
+    contadorVacantes++;
+    const div = document.createElement('div');
+    div.className = 'vacante-box';
+    div.innerHTML = `
+        <label><strong>Vacante #${contadorVacantes}:</strong></label>
+        <input type="text" id="vacante_titulo_${contadorVacantes}" placeholder="Título del puesto">
+        <input type="text" id="vacante_url_${contadorVacantes}" 
+               placeholder="URL de la vacante (https://...)" 
+               onchange="autoLlenarVacante(${contadorVacantes})"> 
+        <textarea id="vacante_desc_${contadorVacantes}" rows="4" placeholder="Descripción..."></textarea>
+    `;
+    document.getElementById('contenedor-vacantes').appendChild(div);
+}
 
         // --- LÓGICA PRINCIPAL ---
         async function ejecutarAnalisis() {
