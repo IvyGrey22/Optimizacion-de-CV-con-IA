@@ -7,17 +7,27 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import spacy
 import google.generativeai as genai
+import os
+from dotenv import load_dotenv
+import google.generativeai as genai
+
+# Cargar las variables del archivo .env
+load_dotenv()
+
+# Obtener la clave de forma segura
+api_key = os.getenv("GOOGLE_API_KEY")
+genai.configure(api_key=api_key)
 
 app = Flask(__name__)
 
 # --- CONFIGURACIÓN DE IA (Google AI Studio) ---
-genai.configure(api_key="AIzaSyD8kfguYIuTnQ76UamKTfcGbs4tM7sh2KI")
+genai.configure(api_key="GOOGLE_API_KEY")
 
 try:
     nlp = spacy.load("es_core_news_sm")
 except:
+    # Esta línea DEBE tener sangría hacia la derecha
     nlp = None
-
 # --- FUNCIÓN: BÚSQUEDA AUTÓNOMA DE ROLES MEDIANTE IA ---
 def obtener_sugerencia_puestos(texto_cv):
     try:
