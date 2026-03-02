@@ -153,7 +153,7 @@ def analizar_compatibilidad():
         sugerencia_ia = obtener_sugerencia_puestos(texto_cv)
         
         resultados_vs = []
-        for i in range(1, 6): 
+        for i in range(1, 11): 
             titulo = request.form.get(f'vacante_titulo_{i}')
             desc = request.form.get(f'vacante_desc_{i}')
             url = request.form.get(f'vacante_url_{i}')

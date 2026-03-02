@@ -85,14 +85,15 @@
 <script>
 // Esta función detecta cuando pegas una URL en el campo correspondiente
 async function autoLlenarVacante(numero) {
+    async function autoLlenarVacante(numero) {
     const urlInput = document.getElementById(`vacante_url_${numero}`);
     const tituloInput = document.getElementById(`vacante_titulo_${numero}`);
     const descInput = document.getElementById(`vacante_desc_${numero}`);
-    const url = urlInput.value;
+    const url = urlInput.value.trim();
 
     if (url.startsWith('http')) {
-        // Mostramos un mensaje temporal de carga
-        tituloInput.value = "Extrayendo información...";
+        tituloInput.value = "⏳ Extrayendo información con IA...";
+        descInput.value = "Por favor, espera un momento mientras analizamos la URL...";
         
         try {
             const response = await fetch('/extraer_vacante', {
@@ -102,15 +103,20 @@ async function autoLlenarVacante(numero) {
             });
             
             const data = await response.json();
-            // Si la IA nos devolvió un JSON en texto, lo convertimos
-            const info = typeof data === 'string' ? JSON.parse(data) : data;
+            // Limpiamos la respuesta de posibles etiquetas de Markdown
+            let info = data;
+            if (typeof data === 'string') {
+                const limpia = data.replace(/```json|```/g, '').trim();
+                info = JSON.parse(limpia);
+            }
             
-            tituloInput.value = info.titulo || "";
-            descInput.value = info.descripcion || "";
+            tituloInput.value = info.titulo || "Puesto detectado";
+            descInput.value = info.descripcion || "No se pudo extraer una descripción clara.";
             
         } catch (error) {
-            console.error("Error al extraer:", error);
-            tituloInput.value = "Error al extraer. Intenta manual.";
+            console.error("Error:", error);
+            tituloInput.value = "";
+            descInput.value = "Error al conectar con el servidor de IA.";
         }
     }
 }
@@ -143,7 +149,7 @@ document.querySelectorAll('[id^="vacante_url_"]').forEach((el, index) => {
     <div class="vacante-box">
         <label><strong>Vacante #1:</strong></label>
         <input type="text" id="vacante_titulo_1" placeholder="Ej: Ingeniero Mecatrónico">
-        <input type="text" id="vacante_url_1" placeholder="URL de la vacante (Opcional: https://...)">
+        <input type="text" id="vacante_url_1" placeholder="URL de la vacante (Opcional: https://...)" onchange="autoLlenarVacante(1)">
         <textarea id="vacante_desc_1" rows="4" placeholder="O pega aquí la descripción manual..."></textarea>
     </div>
 </div>
@@ -176,7 +182,7 @@ document.querySelectorAll('[id^="vacante_url_"]').forEach((el, index) => {
         // --- LOGICA DE MÚLTIPLES VACANTES ---
         let contadorVacantes = 1;
         function agregarCampoVacante() {
-    if (contadorVacantes >= 5) return;
+    if (contadorVacantes >= 10) return;
     contadorVacantes++;
     const div = document.createElement('div');
     div.className = 'vacante-box';
