@@ -16,6 +16,7 @@ __pycache__/
 # --- SEGURIDAD Y CONFIGURACIÓN ---
 # Ignora archivos que puedan contener tu API Key o secretos
 .env
+*.env
 secret_key.txt
 keys/
 
@@ -28,4 +29,4 @@ keys/
 # Ignora archivos de configuración del sistema o del editor
 .vscode/
 .idea/
-.DS_Store
+.DS_Storegit rm --cached .env
