@@ -1,6 +1,31 @@
-.venv
-entorno_cv
-__pycache__
+# --- ENTORNOS VIRTUALES ---
+# Ignora las carpetas de entorno para que no se suban a GitHub
+.venv/
+entorno_cv/
+env/
+venv/
+
+# --- ARCHIVOS DE PYTHON Y CACHE ---
+# Archivos temporales que genera Python al ejecutarse
+__pycache__/
 *.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# --- SEGURIDAD Y CONFIGURACIÓN ---
+# Ignora archivos que puedan contener tu API Key o secretos
+.env
+secret_key.txt
+keys/
+
+# --- DOCUMENTOS ---
+# Ignora todos los archivos de texto excepto el de requerimientos
 *.txt
 !requirements.txt
+
+# --- OTROS ---
+# Ignora archivos de configuración del sistema o del editor
+.vscode/
+.idea/
+.DS_Store
