@@ -92,7 +92,7 @@ async function autoLlenarVacante(numero) {
     const url = urlInput.value.trim();
 
     if (url.startsWith('http')) {
-        tituloInput.value = "⏳ Extrayendo información con IA...";
+        tituloInput.value = "Extrayendo información con IA...";
         descInput.value = "Por favor, espera un momento mientras analizamos la URL...";
         
         try {
@@ -175,12 +175,11 @@ document.querySelectorAll('[id^="vacante_url_"]').forEach((el, index) => {
     <footer>
         <span class="carrera">Proyecto de Titulación de Ingeniería Mecatrónica</span>
         <span class="autor-nombre">Desarrollado por: Ivette Pérez Pérez</span>
-        <span style="font-size: 12px; color: #999;">&copy; 2026 - Todos los derechos reservados</span>
     </footer>
 
     <script>
         // --- LOGICA DE MÚLTIPLES VACANTES ---
-        let contadorVacantes = 1;
+        let contadorVacantes = 1;git add index.html
         function agregarCampoVacante() {
     if (contadorVacantes >= 10) return;
     contadorVacantes++;
@@ -200,16 +199,16 @@ document.querySelectorAll('[id^="vacante_url_"]').forEach((el, index) => {
         // --- LÓGICA PRINCIPAL ---
         async function ejecutarAnalisis() {
             const fileInput = document.getElementById('cv-upload');
-            if (!fileInput.files[0]) return alert("⚠️ Por favor sube tu CV (PDF).");
+            if (!fileInput.files[0]) return alert(" Por favor sube tu CV (PDF).");
 
             // Verificar al menos una vacante
             const vac1 = document.getElementById('vacante_desc_1').value;
-            if (!vac1) return alert("⚠️ Debes llenar al menos la Vacante #1.");
+            if (!vac1) return alert(" Debes llenar al menos la Vacante #1.");
 
             // Efecto visual
             const btn = document.querySelector('.btn-analizar');
             const txtOriginal = btn.innerText;
-            btn.innerText = "⏳ La IA está leyendo tu CV...";
+            btn.innerText = " La IA está leyendo tu CV...";
             btn.disabled = true;
 
             // Preparar datos
@@ -269,7 +268,7 @@ document.querySelectorAll('[id^="vacante_url_"]').forEach((el, index) => {
                     }
                 });
             } else {
-                auditHTML += `<div class="audit-item pass">✨ Estructura limpia y estándar detectada.</div>`;
+                auditHTML += `<div class="audit-item pass"> Estructura limpia y estándar detectada.</div>`;
             }
             auditDiv.innerHTML = auditHTML;
 
