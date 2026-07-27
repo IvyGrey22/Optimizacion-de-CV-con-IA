@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Editor de CV + IA | Proyecto de Titulación</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; color: #333; max-width: 1100px; margin: 0 auto; padding: 20px; }
+        
+        /* HEADER */
+        header { text-align: center; background-color: #2c3e50; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { margin: 0; font-size: 24px; }
+
+        /* LAYOUT DE COLUMNAS (GRID RESPONSIVO) */
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        
+        @media (max-width: 768px) {
+            .grid-container { grid-template-columns: 1fr; }
+        }
+
+        /* TARJETAS */
+        section { background-color: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        /* INPUTS Y TEXTAREAS */
+        label { display: block; margin-top: 15px; font-weight: bold; color: #555; font-size: 14px; }
+        input[type="text"], textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; font-size: 14px; }
+        textarea:focus, input:focus { border-color: #2ecc71; outline: none; }
+        
+        /* CAJA DE VACANTE */
+        .vacante-box { background-color: #e8f6f3; border: 2px solid #d1f2eb; }
+        
+        /* BOTÓN DE DESCARGA */
+        .btn-download { 
+            background-color: #28a745; color: white; width: 100%; padding: 15px; 
+            font-size: 18px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 20px; transition: 0.3s; 
+        }
+        .btn-download:hover { background-color: #218838; transform: translateY(-2px); }
+        
+        /* CHECKBOX IA */
+        .opt-ia { background: #fff3cd; padding: 10px; border-radius: 5px; margin-top: 15px; display: flex; align-items: center; gap: 10px; border: 1px solid #ffeeba; }
+        
+        small { color: #888; display: block; margin-top: 2px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📝 Verificador ATS + Analizador de Vacantes</h1>
+    </header>
+
+    <form id="form-cv" action="/descargar_pdf" method="post">
+        <div class="grid-container">
+            
+            <!-- COLUMNA 1: DATOS DEL CV -->
+            <section>
+                <h3>1. Tus Datos Extraídos</h3>
+                
+                <label for="nombre">Nombre Completo</label>
+                <input type="text" id="nombre" name="nombre" value="{{ datos.nombre if datos else '' }}" required>
+                
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <div style="flex:1; min-width: 180px;">
+                        <label for="email">Email</label>
+                        <input type="text" id="email" name="email" value="{{ datos.email if datos else '' }}">
+                    </div>
+                    <div style="flex:1; min-width: 180px;">
+                        <label for="telefono">Teléfono</label>
+                        <input type="text" id="telefono" name="telefono" value="{{ datos.telefono if datos else '' }}">
+                    </div>
+                </div>
+
+                <label for="perfil">Perfil Profesional</label>
+                <textarea id="perfil" name="perfil" style="height: 100px;">{{ datos.perfil if datos else '' }}</textarea>
+
+                <label for="experiencia">Experiencia (Texto plano)</label>
+                <textarea id="experiencia" name="experiencia" style="height: 200px;">{{ datos.experiencia if datos else '' }}</textarea>
+                <small>💡 El sistema detectará fechas y títulos automáticamente en el PDF final.</small>
+
+                <label for="educacion">Educación</label>
+                <textarea id="educacion" name="educacion" style="height: 100px;">{{ datos.educacion if datos else '' }}</textarea>
+
+                <label for="skills">Habilidades (Skills)</label>
+                <textarea id="skills" name="skills" style="height: 80px;">{{ datos.skills if datos else '' }}</textarea>
+            </section>
+
+            <!-- COLUMNA 2: OBJETIVO / VACANTE -->
+            <section class="vacante-box">
+                <h3>2. La Vacante (Target)</h3>
+                
+                <label for="vacante_url">Link de la Vacante (URL)</label>
+                <input type="text" id="vacante_url" name="vacante_url" placeholder="https://www.linkedin.com/jobs/..." style="margin-bottom: 10px;" onchange="autoLlenarVacanteEditor()">
+
+                <label for="vacante">Descripción del Puesto</label>
+                <p style="font-size: 0.9em; color: #666; margin-top: 0; margin-bottom: 5px;">
+                    Pega aquí la descripción completa. La IA buscará palabras clave que te falten.
+                </p>
+                <textarea id="vacante" name="vacante" style="height: 300px;" placeholder="Ej: Buscamos Ingeniero Mecatrónico con experiencia en PLC..."></textarea>
+                
+                <div class="opt-ia">
+                    <input type="checkbox" name="ia_opt" id="ia" value="si" checked>
+                    <label for="ia" style="margin:0; cursor: pointer; font-weight: normal;">
+                        ⚡ <strong>Auto-Optimizar con IA</strong><br>
+                        <span style="font-size: 12px;">Agrega automáticamente skills faltantes de la vacante a tu CV.</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-download">⬇️ Generar y Descargar PDF</button>
+            </section>
+        </div>
+    </form>
+
+    <script>
+        // Endpoint base si se usa backend desacoplado
+        const API_BASE_URL = '';
+
+        // Función de extracción automática por URL dentro del editor
+        async function autoLlenarVacanteEditor() {
+            const urlInput = document.getElementById('vacante_url');
+            const descInput = document.getElementById('vacante');
+            const url = urlInput.value.trim();
+
+            if (url.startsWith('http')) {
+                descInput.value = "Obteniendo y analizando los requisitos de la vacante con IA...";
+                
+                try {
+                    const response = await fetch(`${API_BASE_URL}/extraer_vacante`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ url: url })
+                    });
+                    
+                    const data = await response.json();
+                    let info = data;
+                    if (typeof data === 'string') {
+                        const limpia = data.replace(/```json|```/g, '').trim();
+                        info = JSON.parse(limpia);
+                    }
+                    
+                    descInput.value = info.descripcion || data.descripcion || "No se pudo extraer la descripción automáticamente. Por favor, pégala manualmente.";
+                } catch (error) {
+                    console.error("Error al extraer vacante:", error);
+                    descInput.value = "Error de conexión al obtener la vacante. Pega la descripción manualmente.";
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+

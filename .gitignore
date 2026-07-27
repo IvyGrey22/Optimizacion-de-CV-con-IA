@@ -1,0 +1,28 @@
+# Entornos virtuales
+.venv/
+entorno_cv/
+env/
+venv/
+
+# Cache de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Secretos y configuracion local
+.env
+*.env
+secret_key.txt
+keys/
+
+# Documentos de texto, excepto dependencias de deploy
+*.txt
+!requirements.txt
+!runtime.txt
+
+# Editor y sistema
+.vscode/
+.idea/
+.DS_Store

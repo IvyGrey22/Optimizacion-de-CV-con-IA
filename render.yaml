@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: optimizador-cv
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn Herramientas_Extra.api.app:app
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"

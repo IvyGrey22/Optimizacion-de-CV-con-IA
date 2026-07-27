@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Análisis de compatibilidad semántica y optimización de perfiles técnicos usando IA</title>
+    <style>
+        body { font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; background-color: #f0f2f5; color: #333; max-width: 950px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; min-height: 100vh; }
+        header { text-align: center; background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 25px; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { margin: 0; font-size: 26px; line-height: 1.25; }
+        main { flex: 1; }
+        section { background: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        h2 { color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; margin-top: 0; }
+        .upload-box { border: 2px dashed #bdc3c7; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; background: #fafafa; border-radius: 6px; }
+        .upload-box:hover { border-color: #3498db; background: #ebf5fb; }
+        input[type="text"], textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; margin-top: 5px; box-sizing: border-box; font-family: inherit; }
+        .vacante-box { border-left: 4px solid #34495e; padding-left: 15px; margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 5px; }
+        button { cursor: pointer; transition: 0.3s; border: none; font-weight: bold; border-radius: 6px; }
+        .btn-agregar { background: #e0e0e0; color: #333; padding: 10px 20px; margin-top: 10px; }
+        .btn-analizar { background: #27ae60; color: white; width: 100%; padding: 15px; font-size: 18px; margin-top: 10px; }
+        .btn-analizar:hover { background: #219150; transform: translateY(-2px); }
+        .acciones-descarga { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .btn-secundario { background: #2c3e50; color: white; padding: 13px; font-size: 15px; }
+        .btn-secundario:hover { background: #1f2d3a; }
+        .estado-generacion { color: #555; font-size: 14px; margin-top: 12px; min-height: 20px; }
+        .audit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .audit-item { padding: 10px; border-radius: 5px; font-size: 14px; }
+        .pass { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .fail { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .result-card { display: flex; flex-wrap: wrap; background: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-top: 20px; overflow: hidden; border-left: 8px solid #ccc; }
+        .score-section { background: #f8f9fa; padding: 20px; text-align: center; min-width: 130px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid #eee; }
+        .big-number { font-size: 48px; font-weight: 800; line-height: 1; }
+        .scale-label { font-size: 12px; color: #7f8c8d; margin-top: 5px; font-weight: bold; }
+        .info-section { padding: 20px; flex: 1; }
+        .progress-container { background: #e0e0e0; border-radius: 10px; height: 22px; width: 100%; margin: 10px 0; overflow: hidden; position: relative; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #3498db, #2ecc71); width: 0%; transition: width 1s ease-in-out; }
+        .progress-text { position: absolute; width: 100%; text-align: center; top: 0; line-height: 22px; font-size: 12px; font-weight: bold; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.5); }
+        .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+        .tag { background: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 15px; font-size: 12px; border: 1px solid #ffeeba; }
+        .baja { border-color: #e74c3c; } .baja .big-number { color: #e74c3c; }
+        .media { border-color: #f1c40f; } .media .big-number { color: #f39c12; }
+        .alta { border-color: #27ae60; } .alta .big-number { color: #27ae60; }
+        footer { text-align: center; margin-top: 50px; padding: 25px; color: #666; font-size: 14px; border-top: 1px solid #e0e0e0; background-color: #fff; border-radius: 10px; }
+        .autor-nombre { color: #2c3e50; font-weight: bold; font-size: 18px; margin: 5px 0; display: block; }
+        .carrera { color: #7f8c8d; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; font-size: 12px; }
+
+        .btn-info-ats { background: #eef2f7; color: #2c3e50; border: 1px solid #cbd5e1; padding: 8px 14px; font-size: 13px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .btn-info-ats:hover { background: #34495e; color: white; border-color: #34495e; }
+        .modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .modal-backdrop.active { display: flex; }
+        .modal-content { background: white; border-radius: 10px; max-width: 620px; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; animation: fadeIn 0.2s ease-out; }
+        .modal-header { padding: 16px 20px; background: #f8f9fa; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-close { font-size: 24px; cursor: pointer; color: #64748b; font-weight: bold; line-height: 1; }
+        .modal-close:hover { color: #1e293b; }
+        .modal-body { padding: 20px; font-size: 14px; line-height: 1.6; color: #334155; }
+        .lista-criterios-ats { margin: 12px 0 0 0; padding-left: 18px; }
+        .lista-criterios-ats li { margin-bottom: 10px; }
+        .modal-footer { padding: 12px 20px; background: #f8f9fa; border-top: 1px solid #e2e8f0; text-align: right; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .consejos-container { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+        .consejo-card { background: #f8fafc; border-left: 4px solid #3b82f6; padding: 14px 18px; border-radius: 6px; font-size: 14px; color: #1e293b; line-height: 1.5; border-top: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; }
+        .consejo-card strong { color: #1d4ed8; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Análisis de compatibilidad semántica y optimización de perfiles técnicos usando IA</h1>
+        <p style="opacity: 0.9; margin-top: 8px;">Evalúa tu CV frente a vacantes específicas mediante auditoría ATS, palabras clave y compatibilidad porcentual.</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>1. Carga tu CV (PDF)</h2>
+            <div class="upload-box" onclick="document.getElementById('cv-upload').click()">
+                <span style="font-size: 30px;">PDF</span><br>
+                <span id="filename">Haz clic para seleccionar tu archivo PDF</span>
+                <input type="file" id="cv-upload" accept=".pdf" style="display: none;" onchange="document.getElementById('filename').innerText = this.files[0].name">
+            </div>
+        </section>
+
+        <section>
+            <h2>2. Vacantes a analizar</h2>
+            <div id="contenedor-vacantes">
+                <div class="vacante-box">
+                    <label><strong>Vacante #1:</strong></label>
+                    <input type="text" id="vacante_titulo_1" placeholder="Ej: Ingeniero Mecatrónico">
+                    <input type="text" id="vacante_url_1" placeholder="URL de la vacante (opcional: https://...)" onchange="autoLlenarVacante(1)">
+                    <textarea id="vacante_desc_1" rows="4" placeholder="O pega aquí la descripción manual..."></textarea>
+                </div>
+            </div>
+            <button type="button" class="btn-agregar" onclick="agregarCampoVacante()">+ Agregar otra vacante</button>
+        </section>
+
+        <button class="btn-analizar" onclick="ejecutarAnalisis()">Analizar ahora</button>
+
+        <div id="resultados" style="display: none;">
+            <section style="margin-top: 30px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; margin-bottom: 15px;">
+                    <h2 style="margin: 0; border: none; padding: 0;">Auditoría técnica ATS</h2>
+                    <button type="button" class="btn-info-ats" onclick="toggleModalAts()">ℹ️ Factores que evalúa la auditoría</button>
+                </div>
+
+                <div id="modal-ats" class="modal-backdrop" onclick="if(event.target === this) toggleModalAts()">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 style="margin: 0; color: #2c3e50; font-size: 18px;">📊 Factores de Evaluación de la Auditoría ATS</h3>
+                            <span class="modal-close" onclick="toggleModalAts()">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <p style="margin-top: 0;">Los sistemas ATS (<em>Applicant Tracking System</em>) son filtros automáticos utilizados por empresas para analizar y clasificar CVs antes de la revisión humana. Nuestra auditoría evalúa:</p>
+                            <ul class="lista-criterios-ats">
+                                <li><strong>1. Legibilidad de Texto en PDF:</strong> Verifica que el documento contenga texto digital seleccionable y no sea un archivo escaneado o imagen rasterizada sin capa OCR.</li>
+                                <li><strong>2. Datos de Contacto e Identificación:</strong> Comprueba la presencia clara de correo electrónico, teléfono y enlaces clave a perfiles (LinkedIn, GitHub, Portafolio).</li>
+                                <li><strong>3. Encabezados y Secciones Estándar:</strong> Confirma la existencia de secciones estándar reconocibles (<em>Perfil Profesional</em>, <em>Experiencia</em>, <em>Educación</em>, <em>Habilidades</em>).</li>
+                                <li><strong>4. Coincidencia Semántica de Palabras Clave:</strong> Mide la concordancia del vocabulario técnico de tu CV frente a los términos más requeridos de la vacante.</li>
+                                <li><strong>5. Limpieza de Formato y Estructura:</strong> Promueve diseños lineales sencillos para evitar que tablas complejas o gráficos bloqueen la lectura automatizada.</li>
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-secundario" style="width: auto; padding: 8px 18px;" onclick="toggleModalAts()">Entendido</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="audit-container" class="audit-grid"></div>
+            </section>
+
+            <section id="seccion-consejos">
+                <h2>💡 Consejos de Redacción para Experiencia (IA)</h2>
+                <p style="font-size: 14px; color: #555; margin-bottom: 12px; margin-top: 5px;">
+                    Recomendaciones personalizadas basadas en las debilidades y palabras clave detectadas en tu CV original para optimizar tus viñetas de experiencia laboral:
+                </p>
+                <div id="consejos-container" class="consejos-container"></div>
+            </section>
+
+            <section>
+                <h2>Calificación VS vacante</h2>
+                <div id="vs-container"></div>
+            </section>
+
+            <section>
+                <h2>Documentos generados para la vacante</h2>
+                <div class="acciones-descarga">
+                    <button type="button" class="btn-secundario" onclick="generarDocumento('cover')">Descargar cover letter</button>
+                    <button type="button" class="btn-secundario" onclick="generarDocumento('cv')">Descargar CV corregido ATS</button>
+                </div>
+                <div id="estado-generacion" class="estado-generacion"></div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <span class="carrera">Proyecto de Titulación de Ingeniería Mecatrónica</span>
+        <span class="autor-nombre">Desarrollado por: Ivette Pérez Pérez</span>
+    </footer>
+
+    <script>
+        const API_BASE_URL = "";
+        let contadorVacantes = 1;
+        let ultimoResultadoAnalisis = null;
+
+        async function autoLlenarVacante(numero) {
+            const urlInput = document.getElementById(`vacante_url_${numero}`);
+            const tituloInput = document.getElementById(`vacante_titulo_${numero}`);
+            const descInput = document.getElementById(`vacante_desc_${numero}`);
+            const url = urlInput.value.trim();
+
+            if (url.startsWith("http")) {
+                tituloInput.value = "Extrayendo información con IA...";
+                descInput.value = "Por favor, espera un momento mientras analizamos la URL...";
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/extraer_vacante`, {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({url: url})
+                    });
+
+                    const data = await response.json();
+                    let info = data;
+                    if (typeof data === "string") {
+                        const limpia = data.replace(/```json|```/g, "").trim();
+                        info = JSON.parse(limpia);
+                    }
+
+                    const titulo = info.titulo || "Puesto detectado";
+                    const empresa = info.empresa && info.empresa !== "Empresa No Especificada" ? ` - ${info.empresa}` : "";
+                    tituloInput.value = `${titulo}${empresa}`;
+                    descInput.value = info.descripcion || "No se pudo extraer una descripción clara.";
+                } catch (error) {
+                    console.error("Error:", error);
+                    tituloInput.value = "";
+                    descInput.value = "Error al conectar con el servidor de IA.";
+                }
+            }
+        }
+
+        function agregarCampoVacante() {
+            if (contadorVacantes >= 10) return;
+            contadorVacantes++;
+            const div = document.createElement("div");
+            div.className = "vacante-box";
+            div.innerHTML = `
+                <label><strong>Vacante #${contadorVacantes}:</strong></label>
+                <input type="text" id="vacante_titulo_${contadorVacantes}" placeholder="Título del puesto">
+                <input type="text" id="vacante_url_${contadorVacantes}"
+                       placeholder="URL de la vacante (https://...)"
+                       onchange="autoLlenarVacante(${contadorVacantes})">
+                <textarea id="vacante_desc_${contadorVacantes}" rows="4" placeholder="Descripción..."></textarea>
+            `;
+            document.getElementById("contenedor-vacantes").appendChild(div);
+        }
+
+        async function ejecutarAnalisis() {
+            const fileInput = document.getElementById("cv-upload");
+            if (!fileInput.files[0]) return alert("Por favor sube tu CV en PDF.");
+
+            const vac1 = document.getElementById("vacante_desc_1").value;
+            const url1 = document.getElementById("vacante_url_1").value;
+            if (!vac1 && !url1) return alert("Debes llenar al menos la descripción o URL de la Vacante #1.");
+
+            const btn = document.querySelector(".btn-analizar");
+            const txtOriginal = btn.innerText;
+            btn.innerText = "La IA está leyendo tu CV...";
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append("cv-upload", fileInput.files[0]);
+
+            for (let i = 1; i <= contadorVacantes; i++) {
+                const tit = document.getElementById(`vacante_titulo_${i}`);
+                const desc = document.getElementById(`vacante_desc_${i}`);
+                const url = document.getElementById(`vacante_url_${i}`);
+                if (tit && (desc || url)) {
+                    formData.append(`vacante_titulo_${i}`, tit.value || `Vacante ${i}`);
+                    formData.append(`vacante_desc_${i}`, desc.value);
+                    formData.append(`vacante_url_${i}`, url.value);
+                }
+            }
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/analizar`, { method: "POST", body: formData });
+                const data = await res.json();
+
+                if (data.status === "success") {
+                    ultimoResultadoAnalisis = data;
+                    mostrarResultados(data);
+                } else {
+                    alert("Error del servidor: " + data.error);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Error de conexión. Revisa la consola o la conexión con el backend.");
+            } finally {
+                btn.innerText = txtOriginal;
+                btn.disabled = false;
+            }
+        }
+
+        function mostrarResultados(data) {
+            document.getElementById("resultados").style.display = "block";
+
+            const auditDiv = document.getElementById("audit-container");
+            let auditHTML = "";
+
+            auditHTML += data.auditoria.legibilidad
+                ? `<div class="audit-item pass"><strong>Legibilidad:</strong> Texto detectado correctamente.</div>`
+                : `<div class="audit-item fail"><strong>Legibilidad:</strong> Es una imagen o no tiene texto extraíble.</div>`;
+
+            auditHTML += data.auditoria.contacto
+                ? `<div class="audit-item pass"><strong>Contacto:</strong> Email o teléfono encontrados.</div>`
+                : `<div class="audit-item fail"><strong>Contacto:</strong> No encontramos datos claros.</div>`;
+
+            if (data.auditoria.errores && data.auditoria.errores.length > 0) {
+                data.auditoria.errores.forEach(err => {
+                    if (!err.includes("ALERTA") && !err.includes("Contacto")) {
+                        auditHTML += `<div class="audit-item fail">${err}</div>`;
+                    }
+                });
+            } else {
+                auditHTML += `<div class="audit-item pass">Estructura limpia y estándar detectada.</div>`;
+            }
+            auditDiv.innerHTML = auditHTML;
+
+            const consejosDiv = document.getElementById("consejos-container");
+            if (consejosDiv) {
+                consejosDiv.innerHTML = "";
+                const listaConsejos = data.consejos_redaccion || [];
+                if (listaConsejos.length > 0) {
+                    listaConsejos.forEach((c, idx) => {
+                        const div = document.createElement("div");
+                        div.className = "consejo-card";
+                        div.innerHTML = `<strong>Consejo #${idx + 1}:</strong> ${c}`;
+                        consejosDiv.appendChild(div);
+                    });
+                } else {
+                    consejosDiv.innerHTML = `<div class="consejo-card">Sustituye verbos pasivos por acción directa y cuantifica tus logros con métricas concretas.</div>`;
+                }
+            }
+
+            const vsDiv = document.getElementById("vs-container");
+            vsDiv.innerHTML = "";
+
+            if (!data.analisis_vs || data.analisis_vs.length === 0) {
+                vsDiv.innerHTML = "<p>No se pudieron analizar vacantes. Asegúrate de poner texto o una URL válida.</p>";
+                return;
+            }
+
+            data.analisis_vs.forEach(item => {
+                let colorClass = "baja";
+                if (item.calificacion_10 >= 8) colorClass = "alta";
+                else if (item.calificacion_10 >= 5) colorClass = "media";
+
+                let tagsHTML = item.faltantes.map(t => `<span class="tag">Falta: ${t}</span>`).join("");
+                if (!tagsHTML) tagsHTML = "<span style='color:green; font-weight:bold;'>Felicidades, tienes todas las palabras clave principales.</span>";
+
+                vsDiv.innerHTML += `
+                    <div class="result-card ${colorClass}">
+                        <div class="score-section">
+                            <div class="big-number">${item.calificacion_10}</div>
+                            <div class="scale-label">Escala 1-10</div>
+                        </div>
+                        <div class="info-section">
+                            <h3 style="margin:0;">${item.titulo}</h3>
+                            <div style="font-size: 14px; color: #666; margin-bottom: 5px;">${item.veredicto}</div>
+
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: ${item.compatibilidad}%"></div>
+                                <div class="progress-text">Compatibilidad matemática: ${item.compatibilidad}%</div>
+                            </div>
+
+                            <p style="font-size: 13px; font-weight: bold; margin-top: 15px;">Palabras clave que le faltan a tu CV:</p>
+                            <div class="tags">${tagsHTML}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function generarDocumento(tipo) {
+            const estadoDiv = document.getElementById("estado-generacion");
+            const vac1Titulo = document.getElementById("vacante_titulo_1") ? document.getElementById("vacante_titulo_1").value : "";
+            const vac1Desc = document.getElementById("vacante_desc_1") ? document.getElementById("vacante_desc_1").value : "";
+
+            const primerVs = ultimoResultadoAnalisis && ultimoResultadoAnalisis.analisis_vs && ultimoResultadoAnalisis.analisis_vs[0]
+                ? ultimoResultadoAnalisis.analisis_vs[0]
+                : null;
+
+            estadoDiv.innerText = "Generando documento con IA, por favor espera...";
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/generar_documento`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        tipo: tipo,
+                        vacante_titulo: vac1Titulo || (primerVs ? primerVs.titulo : ""),
+                        vacante_desc: vac1Desc || (primerVs ? primerVs.texto_vacante : ""),
+                        cv_texto: ultimoResultadoAnalisis ? ultimoResultadoAnalisis.texto_cv : "",
+                        nota_pct: primerVs ? primerVs.compatibilidad : 0,
+                        faltantes: primerVs ? primerVs.faltantes : [],
+                        auditoria: ultimoResultadoAnalisis ? ultimoResultadoAnalisis.auditoria : {}
+                    })
+                });
+
+                const data = await res.json();
+                if (data.contenido) {
+                    estadoDiv.innerText = "¡Documento listo! Descargando...";
+                    const blob = new Blob([data.contenido], { type: "text/plain;charset=utf-8" });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.download = tipo === "cover" ? "Cover_Letter.txt" : "CV_Optimizado_ATS.txt";
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                    estadoDiv.innerText = "Descarga iniciada.";
+                } else {
+                    estadoDiv.innerText = "Error al generar el documento: " + (data.error || "Desconocido");
+                }
+            } catch (e) {
+                console.error(e);
+                estadoDiv.innerText = "Error de conexión al generar el documento.";
+            }
+        }
+
+        function toggleModalAts() {
+            const modal = document.getElementById("modal-ats");
+            if (modal) {
+                modal.classList.toggle("active");
+            }
+        }
+    </script>
+</body>
+</html>

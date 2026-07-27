@@ -1,0 +1,8 @@
+{
+  "name": "Análisis y Optimización de CV con IA",
+  "description": "Análisis de compatibilidad semántica y optimización de perfiles técnicos usando IA y auditoría ATS",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
